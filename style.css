@@ -2,3 +2,45 @@ html {
     box-sizing: border-box;
     margin: 0;
 }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+    margin-left: 50px;
+    /* margin-top: 10px; */
+    overflow: hidden;
+    background-color: rgb(198, 255, 198);
+}
+
+button {
+    padding: 4px 6px;
+    border-radius: 5px;
+    outline: none;  
+    border: 1px solid #222;
+    margin-left: 20px;
+    transition: background-color 1s, box-shadow 1s;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+button:focus {
+    background-color: rgb(37, 161, 37);
+    color: white;
+    padding: 3px 5px;
+    border: 2px solid rgb(12, 90, 12);
+    box-shadow: 5px 5px rgba(116, 116, 116, 0.4);
+}
+
+.tool {
+    position: absolute;
+    display: inline-block;
+    text-align: left;
+    padding: 2px 4px;
+    font: 12px sans-serif;
+    border: 1px solid #222;
+    border-radius: 4px;
+    pointer-events: none;
+    background: white;
+}

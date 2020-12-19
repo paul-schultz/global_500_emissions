@@ -12,44 +12,74 @@ var svg = d3.select("#bar")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
+// Initialize axes
+var x = d3.scaleLinear()
+      .range([ 0, width]); 
+var xAxis = svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "myXaxis")
+
+var y = d3.scaleBand()
+      .range([ 0, height ])
+      .padding(.1);
+var yAxis = svg.append("g")
+
+// Init Tooltip
+var tool = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'tool')
+        .style('opacity', 0);
+    
 function update(selectedVar) {
 // Parse the Data
 d3.csv("emissions.csv", function(data) {
-    // Add X axis
-    var x = d3.scaleLinear()
-      .domain([0, 140000])
-      .range([ 0, width]);
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-        .attr("transform", "translate(-10,0)rotate(-45)")
-        .style("text-anchor", "end");
+    // X axis
+    x.domain([0, d3.max(data, function(d) { return +d[selectedVar] }) ]);
+    xAxis.transition().duration(1000).call(d3.axisBottom(x));
   
     // Y axis
-    var y = d3.scaleBand()
-      .range([ 0, height ])
-      .domain(data.map(function(d) { return d.CompanyName; }))
-      .padding(.1);
-    svg.append("g")
-      .call(d3.axisLeft(y))
-  
-    console.log(data)
+    y.domain(data.map(function(d) { return d.CompanyName; }));
+    yAxis.transition().duration(1000).call(d3.axisLeft(y));
       
-    //Bars
+    // Bars
     var u = svg.selectAll("rect")
       .data(data)
 
      u.enter()
       .append("rect")
       .merge(u)
+      // Tooltips
+      .on('mouseover', function(d) {
+        d3.select(this).transition().duration(200).attr("fill", "rgb(1, 219, 1)")
+        tool.transition().duration(200).style('opacity', 0.9);
+        if (selectedVar == 'Scope1Min') {
+          tool.html(`${d[selectedVar]} x 1000 MTCO2e`)
+            .style("left", d3.event.pageX + "px")
+            .style("top", d3.event.pageY - 28 + "px");
+        } else {
+          tool.html(`${d[selectedVar]} x 1000 MTCO2e`)
+            .style("left", d3.event.pageX + "px")
+            .style("top", d3.event.pageY - 28 + "px");
+        }
+      })
+      .on('mouseout', function(d) {
+        d3.select(this).transition().duration(200).attr("fill", "#228833")
+        tool.transition().duration(500).style('opacity', 0);
+      })
+      // transition effects for bars
+      .transition()
+      .duration(1000)
       .attr("x", x(0) )
       .attr("y", function(d) { return y(d.CompanyName); })
       .attr("width", function(d) { 
           return x(d[selectedVar]); })
       .attr("height", y.bandwidth() )
-      .attr("fill", "#69b3a2")
+      .attr("fill", "#228833")
+      
+      ;
   })
 }
 
 update('Scope1Min')
+
